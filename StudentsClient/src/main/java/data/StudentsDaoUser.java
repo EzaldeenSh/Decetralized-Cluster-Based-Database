@@ -90,7 +90,4 @@ public class StudentsDaoUser implements StudentDao {
         return clientDriver.getJSONPropertyIndexes(databaseName ,collectionName,propertyName , propertyValue);
     }
 
-
-
-
 }

@@ -121,9 +121,11 @@ public class ClientHandler implements Runnable{
            String databaseName = (String) fromClient.readObject();
            String collectionName = (String) fromClient.readObject();
            JSONObject object = (JSONObject) fromClient.readObject();
+
            if(isMine(databaseName ,collectionName)){
                 performWrite(databaseName , collectionName , object);
            }
+
            else {
                requestWrite(databaseName ,collectionName, object);
            }
