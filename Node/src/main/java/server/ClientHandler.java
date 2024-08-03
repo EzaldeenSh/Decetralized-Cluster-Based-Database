@@ -34,6 +34,79 @@ public class ClientHandler implements Runnable{
         thisNode = Node.getInstance();
         initiate();
     }
+    @Override
+    public void run() {
+        try{
+            if(identity.equals("Client")){
+                addClient();
+            }
+            boolean validation = validateUser();
+            toClient.writeObject(validation);
+            if(!validation) {
+                System.out.println("Not validated");
+                return;
+            }
+            selection = fromClient.readInt();
+            while(selection != 0){
+                switch (selection){
+                    case 1:
+                    {
+                        createDatabase();
+                        break;
+                    }
+                    case 2:
+                    {
+                        createCollection();
+                        break;
+                    }
+                    case 3:
+                    {
+                        readObjectByIndex();
+                        break;
+                    }
+                    case 4 :{
+                        readCollection();
+                        break;
+                    }
+                    case 5 : {
+                        writeObject();
+                        break;
+                    }
+                    case 6:{
+                        updateObject();
+                        break;
+                    }
+                    case 7 :{
+                        deleteCollection();
+                        break;
+                    }
+                    case 8 :{
+                        deleteDatabase();
+                        break;
+                    }
+                    case 9:{
+                        createIndexOnASingleJSONProperty();
+                        break;
+                    }
+                    case 10:{
+                        getJSONPropertyIndexing();
+                        break;
+                    }
+                }
+                if(selection == 0 ){
+                    client.close();
+                    break;
+                }
+            }
+            if(identity.equals("Client")){
+                removeClient();
+            }
+        } catch (IOException e ){
+            e.printStackTrace();
+        }
+
+
+    }
     private void initiate(){
         nodesDaoUser = new NodesDaoUser();
         jsonFunctions = new JSONFunctions();
@@ -41,7 +114,6 @@ public class ClientHandler implements Runnable{
     private void addClient(){
         thisNode.setNumberOfConnectedUsers(thisNode.getNumberOfConnectedUsers() + 1);
         nodesDaoUser.updateNodeStatus(thisNode);
-
     }
     private void removeClient(){
         thisNode.setNumberOfConnectedUsers(thisNode.getNumberOfConnectedUsers()-1);
@@ -116,7 +188,7 @@ public class ClientHandler implements Runnable{
         } catch (IOException | ClassNotFoundException ignored) {
         }
     }
-   private void writeObject() {
+    private void writeObject() {
        try {
            String databaseName = (String) fromClient.readObject();
            String collectionName = (String) fromClient.readObject();
@@ -150,6 +222,7 @@ public class ClientHandler implements Runnable{
         } catch (IOException ignored) {
         }
     }
+
     private void requestWrite(String databaseName, String collectionName, JSONObject object){
         boolean result;
         int portNumber = new OwnershipHandler().getOwnerPortNumber(databaseName ,collectionName);
@@ -194,7 +267,6 @@ public class ClientHandler implements Runnable{
     private boolean isMine(String databaseName, String collection){
         return new OwnershipHandler().getCollectionOwner(databaseName ,collection).equals(thisNode.getNodeID());
     }
-
     private void updateObject() {
         try {
             String databaseName = (String) fromClient.readObject();
@@ -274,78 +346,5 @@ public class ClientHandler implements Runnable{
             selection = fromClient.readInt();
         } catch (IOException | ClassNotFoundException ignored) {
         }
-    }
-    @Override
-    public void run() {
-        try{
-            if(identity.equals("Client")){
-                addClient();
-            }
-            boolean validation = validateUser();
-            toClient.writeObject(validation);
-            if(!validation) {
-                System.out.println("Not validated");
-                return;
-            }
-            selection = fromClient.readInt();
-            while(selection != 0){
-                switch (selection){
-                    case 1:
-                    {
-                        createDatabase();
-                        break;
-                    }
-                    case 2:
-                    {
-                        createCollection();
-                        break;
-                    }
-                    case 3:
-                    {
-                        readObjectByIndex();
-                        break;
-                    }
-                    case 4 :{
-                        readCollection();
-                        break;
-                    }
-                    case 5 : {
-                        writeObject();
-                        break;
-                    }
-                    case 6:{
-                        updateObject();
-                        break;
-                    }
-                    case 7 :{
-                        deleteCollection();
-                        break;
-                    }
-                    case 8 :{
-                       deleteDatabase();
-                        break;
-                    }
-                    case 9:{
-                        createIndexOnASingleJSONProperty();
-                        break;
-                    }
-                    case 10:{
-                        getJSONPropertyIndexing();
-                        break;
-                    }
-                }
-                if(selection == 0 ){
-                    client.close();
-                    break;
-                }
-            }
-            if(identity.equals("Client")){
-                removeClient();
-            }
-        } catch (IOException e ){
-            e.printStackTrace();
-        }
-
-
     }
 }

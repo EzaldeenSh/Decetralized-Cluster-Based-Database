@@ -9,21 +9,23 @@ import java.io.IOException;
 
 public class MessageExecutor {
     private final JSONFunctions jsonFunctions;
-    public MessageExecutor(){
+
+    public MessageExecutor() {
         jsonFunctions = new JSONFunctions();
     }
+
     public void executeMessage(Message message) throws IOException, ParseException {
 
         String function = MessageTranslator.getFunction(message);
         String[] params = MessageTranslator.getParams(message);
 
-        switch (function){
-            case "CreateDatabase":  {
+        switch (function) {
+            case "CreateDatabase": {
                 String databaseName = params[0];
                 jsonFunctions.createDatabase(databaseName);
                 break;
             }
-            case "CreateCollection":{
+            case "CreateCollection": {
                 try {
                     JSONParser jsonParser = new JSONParser();
 
@@ -32,43 +34,44 @@ public class MessageExecutor {
                     String schema = params[2];
 
                     JSONObject jsonSchema = (JSONObject) jsonParser.parse(schema);
-                    jsonFunctions.createCollection(databaseName , collectionName , jsonSchema);
+                    jsonFunctions.createCollection(databaseName, collectionName, jsonSchema);
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
                 break;
             }
-            case "WriteObject":{
+            case "WriteObject": {
                 JSONParser jsonParser = new JSONParser();
                 String databaseName = params[0];
                 String collectionName = params[1];
                 try {
                     JSONObject jsonObject = (JSONObject) jsonParser.parse(params[2]);
-                    jsonFunctions.writeDocument(databaseName , collectionName , jsonObject);
+                    jsonFunctions.writeDocument(databaseName, collectionName, jsonObject);
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
                 break;
             }
-            case "UpdateObject":{
+            case "UpdateObject": {
                 JSONParser jsonParser = new JSONParser();
                 String databaseName = params[0];
                 String collectionName = params[1];
                 int index = Integer.parseInt(params[2]);
                 try {
                     JSONObject jsonObject = (JSONObject) jsonParser.parse(params[3]);
-                    jsonFunctions.updateObject(databaseName , collectionName ,index , jsonObject);
+                    jsonFunctions.updateObject(databaseName, collectionName, index, jsonObject);
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
                 break;
             }
-            case "DeleteCollection":{
+            case "DeleteCollection": {
                 String databaseName = params[0];
                 String collectionName = params[1];
-                jsonFunctions.deleteCollection(databaseName , collectionName);
-                break;}
-            case "DeleteDatabase":  {
+                jsonFunctions.deleteCollection(databaseName, collectionName);
+                break;
+            }
+            case "DeleteDatabase": {
                 String databaseName = params[0];
                 jsonFunctions.deleteDatabase(databaseName);
                 break;
@@ -77,7 +80,7 @@ public class MessageExecutor {
                 String databaseName = params[0];
                 String collectionName = params[1];
                 String property = params[2];
-                jsonFunctions.createIndexOnAJSONProperty(databaseName ,collectionName ,property);
+                jsonFunctions.createIndexOnAJSONProperty(databaseName, collectionName, property);
                 break;
             }
         }

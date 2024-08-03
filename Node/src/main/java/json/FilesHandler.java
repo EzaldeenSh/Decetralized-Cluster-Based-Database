@@ -40,17 +40,14 @@ public class FilesHandler implements IFilesHandler{
     }
     public boolean createIdFile(String databaseName, String collectionName) throws IOException {
         String path = pathsHandler.getIdFilePath(databaseName , collectionName);
-        File idFile = new File(path);
-        reentrantLock.lock();
-        boolean result = idFile.createNewFile();
-        FileWriter idWriter = new FileWriter(idFile);
-        idWriter.write("[]");
-        idWriter.close();
-        reentrantLock.unlock();
-        return result;
+        return doCreateFile(path);
     }
     public boolean createDataFile(String databaseName, String collectionName) throws IOException{
         String path = pathsHandler.getDataFilePath(databaseName , collectionName);
+        return doCreateFile(path);
+    }
+
+    private boolean doCreateFile(String path) throws IOException {
         File file = new File(path);
         reentrantLock.lock();
         boolean result = file.createNewFile();
@@ -60,6 +57,7 @@ public class FilesHandler implements IFilesHandler{
         reentrantLock.unlock();
         return result;
     }
+
     public boolean createIndexFile(String databaseName, String collectionName) throws IOException{
         String path = pathsHandler.getIndexFilePath(databaseName ,collectionName);
         File dataFile = new File(path);
